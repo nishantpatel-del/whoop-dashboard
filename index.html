@@ -167,15 +167,25 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
   <footer>WHOOP longitudinal dashboard · snapshot through 6 Oct 2026. Associations shown are observational and should not be interpreted as causal.</footer>
 </main>
   <script>
-fetch('./data.json?ts=' + Date.now())
-  .then(response => response.json())
-  .then(data => {
-    document.getElementById('recovery-value').textContent = data.recovery;
-    document.getElementById('hrv-value').textContent = data.hrv + ' ms';
-    document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
-    document.getElementById('sleep-value').textContent = data.sleep_display;
-  })
-  .catch(error => console.error('Dashboard data load failed:', error));
+function whoopDashboardData(data) {
+  document.getElementById('recovery-value').textContent = data.recovery;
+  document.getElementById('hrv-value').textContent = data.hrv + ' ms';
+  document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
+  document.getElementById('sleep-value').textContent = data.sleep_display;
+}
+
+const whoopScript = document.createElement('script');
+
+whoopScript.src =
+  'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnSeYmLTt4Ayj2T-E4IRmc9WiHK9vb0mymEJQPd7XTbIsuJxRr54-YTdxM8R3IkiTf0TRX4pmmqKqmsEdEAS8ktSMbfoKrKqrqgXrd7y9ZTOU9PfMQ_ZtVOW2cFWbmjDQFe_Yhh0VcPk2mbbsPHXU8ZxvXKBTloe3yinr-7m281yT5sGY1yNKtI5Jsxb8SWhELePAZEBbwexTxkslbVYPMtWy7KTCzK3wMP03eoJLgj4au1gHn3QyWb5fdBNsWhsFNVpT09cPmeZhQyT1VNcx6NRbv-9cg&lib=MySbwrZ_-I0IQtHbBu3HSPxxZI819CIw7' +
+  '?callback=whoopDashboardData&ts=' +
+  Date.now();
+
+whoopScript.onerror = function () {
+  console.error('WHOOP live data load failed');
+};
+
+document.body.appendChild(whoopScript);
 </script>
 </body>
 </html>

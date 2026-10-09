@@ -67,16 +67,19 @@ h1{font-size:clamp(30px,4vw,52px);line-height:1.05;margin:8px 0 6px;letter-spaci
 .kicker{font-size:11px;color:var(--lime);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .conclusions h3{margin:8px 0 8px;font-size:16px}
 .conclusions p{font-size:13px;line-height:1.5;color:var(--muted)}
+.signal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.signal-card{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:12px}.signal-card .state{font-size:11px;color:var(--lime);font-weight:800;text-transform:uppercase;letter-spacing:.08em}.signal-card .name{font-size:13px;font-weight:700;margin-top:6px}.signal-card .meta{font-size:11px;color:var(--muted);margin-top:5px}
 footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}.chart-labels{fill:var(--muted);font-size:10px}.empty-note{color:var(--muted);font-size:12px;padding:10px 0}
 @media(max-width:800px){
   main{padding:16px}
   .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
   .two{grid-template-columns:1fr}
   .conclusions{grid-template-columns:1fr}
+  .signal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:420px){
   .value{font-size:26px}
   .bar-row{grid-template-columns:84px 1fr 42px}
+  .signal-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -93,9 +96,9 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}.ch
   </div>
 
   <section class="grid4">
-    <div class="card"><div class="label">Recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta" id="recovery-delta">7d avg 62.1 · +2.9 pts vs prior 28d</div></div>
-    <div class="card"><div class="label">HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta" id="hrv-delta">7d avg 72.5 ms · −2.5% vs prior 28d</div></div>
-    <div class="card"><div class="label">RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta" id="rhr-delta">7d avg 56.0 bpm</div></div>
+    <div class="card"><div class="label">Today recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta" id="recovery-delta">7d avg 62.1 · +2.9 pts vs prior 28d</div></div>
+    <div class="card"><div class="label">Today HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta" id="hrv-delta">7d avg 72.5 ms · −2.5% vs prior 28d</div></div>
+    <div class="card"><div class="label">Today RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta" id="rhr-delta">7d avg 56.0 bpm</div></div>
     <div class="card"><div class="label">Last night sleep</div><div class="value" id="sleep-value">6h 40m</div><div class="delta" id="sleep-delta">7d avg 6h 40m</div></div>
   </section>
 
@@ -153,6 +156,14 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}.ch
       <div class="bar-row"><span>6–8k</span><div class="track"><div class="fill" style="width:78%;background:#71d99a"></div></div><b>60.4</b></div>
       <div class="bar-row"><span>8–10k</span><div class="track"><div class="fill" style="width:76%;background:#71d99a"></div></div><b>58.8</b></div>
     </div>
+  </section>
+
+  <section class="card" id="signal-90d-section" style="margin-top:12px;display:none">
+    <div class="section">
+      <h2>90-day signal change</h2>
+      <p>Compares the most recent 45 days with the preceding 45 days to show which relationships are strengthening, weakening or emerging.</p>
+    </div>
+    <div class="signal-grid" id="signal-90d-grid"></div>
   </section>
 
   <section class="conclusions" id="conclusions-list"><div class="card"><div class="kicker">01 · What changed</div><h3>Recovery improved, physiology is still broadly stable.</h3><p>Recovery is up, but HRV and RHR do not confirm a clear underlying physiological upswing yet.</p></div><div class="card"><div class="kicker">02 · What we learned</div><h3>Sleep debt and ≥7h actual sleep remain the strongest actionable levers.</h3><p>Training load also matters materially. Walking in the 6–8k step range is a possible positive signal, but not yet prescriptive.</p></div><div class="card"><div class="kicker">03 · What to test</div><h3>Lift → ≥7h sleep + &lt;1h sleep debt.</h3><p>Compare next-morning recovery, HRV and RHR against lifting days where either sleep condition is missed.</p></div></section>
@@ -232,6 +243,19 @@ function renderDrivers(rows) {
   }
 }
 
+function renderSignal90(rows) {
+  if (!Array.isArray(rows) || !rows.length) return;
+  const valid = rows.filter(r => r && r.name);
+  if (!valid.length) return;
+  document.getElementById('signal-90d-grid').innerHTML = valid.map(r => {
+    const recent = Number(r.recent_effect);
+    const prior = Number(r.prior_effect);
+    const fmt = v => Number.isFinite(v) ? ((v>0?'+':'') + v.toFixed(1)) : '—';
+    return '<div class="signal-card"><div class="state">'+esc(r.state || 'stable')+'</div><div class="name">'+esc(r.name)+'</div><div class="meta">Recent '+fmt(recent)+' pts · prior '+fmt(prior)+' pts</div></div>';
+  }).join('');
+  document.getElementById('signal-90d-section').style.display = '';
+}
+
 function renderConclusions(rows) {
   if (!Array.isArray(rows) || rows.length < 3) return;
   const labels = ['01 · What changed','02 · What we learned','03 · What to test'];
@@ -247,6 +271,9 @@ function displayWhoopData(data, source) {
   if (data.recovery_7d_avg != null) {
     document.getElementById('recovery-delta').textContent =
       '7d avg ' + data.recovery_7d_avg + ' · ' + fmtSigned(data.recovery_delta, ' pts vs prior 28d');
+  } else if (data.recovery_delta != null) {
+    document.getElementById('recovery-delta').textContent =
+      '7d trend · ' + fmtSigned(data.recovery_delta, ' pts vs prior 28d');
   }
 
   if (data.hrv != null) document.getElementById('hrv-value').textContent = data.hrv + ' ms';
@@ -287,6 +314,7 @@ function displayWhoopData(data, source) {
   }
   if (Array.isArray(data.drivers)) renderDrivers(data.drivers);
   if (Array.isArray(data.conclusions)) renderConclusions(data.conclusions);
+  if (Array.isArray(data.signal_state_90d)) renderSignal90(data.signal_state_90d);
 
   document.getElementById('live-state').textContent = source === 'cache' ? 'Last WHOOP data' : 'Live WHOOP data';
   document.getElementById('live-dot').classList.remove('loading');

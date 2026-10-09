@@ -93,6 +93,7 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}.ch
     <span class="live-pill">Status <b id="status-value">STABLE</b></span>
     <span class="live-pill">Sleep debt <b id="debt-value">1h 13m</b></span>
     <span class="live-pill">Steps <b id="steps-value">5,408</b></span>
+    <span class="live-pill">QA <b id="qa-status">—</b></span>
   </div>
 
   <section class="grid4">
@@ -243,6 +244,17 @@ function renderDrivers(rows) {
   }
 }
 
+
+function renderQa(qa) {
+  if (!qa || typeof qa !== 'object') return;
+  const el = document.getElementById('qa-status');
+  if (!el) return;
+  el.textContent = qa.status || '—';
+  el.title = Array.isArray(qa.checks)
+    ? qa.checks.map(x => (x.pass ? '✓ ' : '⚠ ') + x.key + ': ' + (x.value ?? '—') + (x.expected ? ' (expected ' + x.expected + ')' : '')).join('\n')
+    : '';
+}
+
 function renderSignal90(rows) {
   if (!Array.isArray(rows) || !rows.length) return;
   const valid = rows.filter(r => r && r.name);
@@ -315,6 +327,7 @@ function displayWhoopData(data, source) {
   if (Array.isArray(data.drivers)) renderDrivers(data.drivers);
   if (Array.isArray(data.conclusions)) renderConclusions(data.conclusions);
   if (Array.isArray(data.signal_state_90d)) renderSignal90(data.signal_state_90d);
+  if (data.qa) renderQa(data.qa);
 
   document.getElementById('live-state').textContent = source === 'cache' ? 'Last WHOOP data' : 'Live WHOOP data';
   document.getElementById('live-dot').classList.remove('loading');

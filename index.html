@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b0e">
+<title>WHOOP Longitudinal Dashboard</title>
+<style>
+:root{
+  --bg:#090b0e;
+  --card:#14181e;
+  --card2:#101419;
+  --border:#252c35;
+  --text:#f5f7f9;
+  --muted:#8d98a5;
+  --lime:#d7ff4f;
+  --blue:#73a9ff;
+  --orange:#ff9e64;
+  --green:#71d99a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+main{max-width:1180px;margin:0 auto;padding:24px}
+.eyebrow{color:var(--lime);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:clamp(30px,4vw,52px);line-height:1.05;margin:8px 0 6px;letter-spacing:-.04em}
+.sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+}
+.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.value{font-size:30px;font-weight:800;letter-spacing:-.04em;margin-top:6px}
+.delta{font-size:13px;margin-top:5px}
+.section{margin-top:14px}
+.section h2{font-size:18px;margin:0 0 4px}
+.section p{margin:0;color:var(--muted);font-size:13px}
+.chart-card{margin-top:12px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:7px}
+.dot{width:18px;height:3px;border-radius:99px;display:inline-block}
+.two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}
+.bars{display:grid;gap:10px;margin-top:12px}
+.bar-row{display:grid;grid-template-columns:96px 1fr 48px;gap:10px;align-items:center;font-size:12px}
+.track{height:12px;background:#0d1116;border-radius:99px;overflow:hidden;border:1px solid #1f2630}
+.fill{height:100%;border-radius:99px}
+.driver{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.driver:last-child{border-bottom:none}
+.driver .name{font-size:13px}
+.driver .impact{font-weight:800;font-size:13px}
+.driver .meta{grid-column:1/-1;color:var(--muted);font-size:11px}
+.badge{display:inline-flex;padding:3px 8px;border-radius:999px;border:1px solid var(--border);font-size:10px;margin-left:6px}
+.conclusions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.conclusions .card{min-height:155px}
+.kicker{font-size:11px;color:var(--lime);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.conclusions h3{margin:8px 0 8px;font-size:16px}
+.conclusions p{font-size:13px;line-height:1.5;color:var(--muted)}
+footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
+@media(max-width:800px){
+  main{padding:16px}
+  .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .two{grid-template-columns:1fr}
+  .conclusions{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  .value{font-size:26px}
+  .bar-row{grid-template-columns:84px 1fr 42px}
+}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">WHOOP / LONGITUDINAL</div>
+  <h1>Performance dashboard</h1>
+  <div class="sub">Snapshot through 6 October 2026 · latest 7 days vs preceding 28 days</div>
+
+  <section class="grid4">
+    <div class="card"><div class="label">Recovery</div><div class="value">62.1</div><div class="delta">+2.9 pts</div></div>
+    <div class="card"><div class="label">HRV</div><div class="value">72.5 ms</div><div class="delta">−2.5%</div></div>
+    <div class="card"><div class="label">RHR</div><div class="value">56.0 bpm</div><div class="delta">essentially flat</div></div>
+    <div class="card"><div class="label">Actual sleep</div><div class="value">6h 40m</div><div class="delta">+4 min</div></div>
+  </section>
+
+  <section class="chart-card">
+    <div class="section">
+      <h2>12-week physiological trajectory</h2>
+      <p>Weekly average relative to rolling 28-day personal baseline. RHR inverted so positive = lower/better RHR.</p>
+    </div>
+    <svg viewBox="0 0 760 250" width="100%" role="img" aria-label="12-week trend chart">
+      <g stroke="#252c35" stroke-width="1">
+        <line x1="52" y1="38" x2="742" y2="38"/><line x1="52" y1="82" x2="742" y2="82"/>
+        <line x1="52" y1="126" x2="742" y2="126"/><line x1="52" y1="170" x2="742" y2="170"/>
+        <line x1="52" y1="214" x2="742" y2="214"/>
+      </g>
+      <g fill="#8d98a5" font-size="11">
+        <text x="8" y="42">+20%</text><text x="16" y="86">+10</text><text x="34" y="130">0</text>
+        <text x="16" y="174">−10</text><text x="16" y="218">−20</text>
+      </g>
+      <polyline points="52,35 115,134 178,171 241,65 304,78 367,135 430,128 493,180 556,137 619,142 682,125 742,145"
+                fill="none" stroke="#d7ff4f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="52,101 115,130 178,124 241,113 304,129 367,119 430,118 493,118 556,132 619,144 682,123 742,132"
+                fill="none" stroke="#73a9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="52,74 115,210 178,164 241,108 304,54 367,143 430,105 493,203 556,94 619,133 682,90 742,131"
+                fill="none" stroke="#ff9e64" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <g fill="#8d98a5" font-size="10">
+        <text x="52" y="239">19 Jul</text><text x="231" y="239">9 Aug</text><text x="420" y="239">30 Aug</text>
+        <text x="608" y="239">20 Sep</text><text x="710" y="239">4 Oct</text>
+      </g>
+    </svg>
+    <div class="legend">
+      <span><i class="dot" style="background:#d7ff4f"></i>HRV</span>
+      <span><i class="dot" style="background:#73a9ff"></i>RHR</span>
+      <span><i class="dot" style="background:#ff9e64"></i>Recovery</span>
+    </div>
+  </section>
+
+  <div class="two">
+    <section class="card">
+      <div class="section"><h2>Sleep dose → recovery</h2><p>Average morning recovery by actual sleep duration.</p></div>
+      <div class="bars">
+        <div class="bar-row"><span>&lt;6.5h</span><div class="track"><div class="fill" style="width:73%;background:#73a9ff"></div></div><b>56.7</b></div>
+        <div class="bar-row"><span>6.5–7h</span><div class="track"><div class="fill" style="width:72%;background:#73a9ff"></div></div><b>55.6</b></div>
+        <div class="bar-row"><span>7–7.5h</span><div class="track"><div class="fill" style="width:86%;background:#73a9ff"></div></div><b>66.7</b></div>
+        <div class="bar-row"><span>7.5–8h</span><div class="track"><div class="fill" style="width:82%;background:#73a9ff"></div></div><b>63.5</b></div>
+        <div class="bar-row"><span>≥8h</span><div class="track"><div class="fill" style="width:100%;background:#73a9ff"></div></div><b>76.8</b></div>
+      </div>
+      <p style="margin-top:12px;color:#8d98a5;font-size:12px">Strongest current sleep signal: <b style="color:#f5f7f9">sleep debt &lt;1h → +13.7 recovery points</b>.</p>
+    </section>
+
+    <section class="card">
+      <div class="section"><h2>Recovery drivers</h2><p>Associations, not causation.</p></div>
+      <div class="driver"><span class="name">Sleep debt &lt;1h <span class="badge">STRONG</span></span><span class="impact">+13.7</span><span class="meta">n=38</span></div>
+      <div class="driver"><span class="name">Actual sleep ≥7h <span class="badge">STRONG</span></span><span class="impact">+10.4</span><span class="meta">n=35</span></div>
+      <div class="driver"><span class="name">Cycling prior day <span class="badge">WATCH</span></span><span class="impact">+18.7</span><span class="meta">n=10 · insufficient sample</span></div>
+      <div class="driver"><span class="name">Weightlifting prior day <span class="badge">STRONG</span></span><span class="impact">−8.6</span><span class="meta">n=45</span></div>
+      <div class="driver"><span class="name">Prior strain ≥16 <span class="badge">STRONG</span></span><span class="impact">−10.7</span><span class="meta">n=33</span></div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:12px">
+    <div class="section"><h2>Movement</h2><p>Daily steps appear more useful than logged walk duration alone.</p></div>
+    <div class="bars">
+      <div class="bar-row"><span>&lt;4k</span><div class="track"><div class="fill" style="width:73%;background:#71d99a"></div></div><b>56.9</b></div>
+      <div class="bar-row"><span>4–6k</span><div class="track"><div class="fill" style="width:74%;background:#71d99a"></div></div><b>57.7</b></div>
+      <div class="bar-row"><span>6–8k</span><div class="track"><div class="fill" style="width:78%;background:#71d99a"></div></div><b>60.4</b></div>
+      <div class="bar-row"><span>8–10k</span><div class="track"><div class="fill" style="width:76%;background:#71d99a"></div></div><b>58.8</b></div>
+    </div>
+  </section>
+
+  <section class="conclusions">
+    <div class="card"><div class="kicker">01 · What changed</div><h3>Recovery improved, physiology is still broadly stable.</h3><p>Recovery is up, but HRV and RHR do not confirm a clear underlying physiological upswing yet.</p></div>
+    <div class="card"><div class="kicker">02 · What we learned</div><h3>Sleep debt and ≥7h actual sleep remain the strongest actionable levers.</h3><p>Training load also matters materially. Walking in the 6–8k step range is a possible positive signal, but not yet prescriptive.</p></div>
+    <div class="card"><div class="kicker">03 · What to test</div><h3>Lift → ≥7h sleep + &lt;1h sleep debt.</h3><p>Compare next-morning recovery, HRV and RHR against lifting days where either sleep condition is missed.</p></div>
+  </section>
+
+  <footer>WHOOP longitudinal dashboard · snapshot through 6 Oct 2026. Associations shown are observational and should not be interpreted as causal.</footer>
+</main>
+</body>
+</html>

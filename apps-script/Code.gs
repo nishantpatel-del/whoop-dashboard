@@ -72,6 +72,8 @@ function buildDashboardData() {
     .sort(byDate_);
 
   const latestDate = recoveryRows[recoveryRows.length - 1].date;
+  const latestRecovery = recoveryRows[recoveryRows.length - 1];
+  const latestSleep = [...sleepRows].reverse().find(r => r.date <= latestDate) || null;
 
   const last7Recovery = dateWindow_(recoveryRows, latestDate, 7);
   const prior28Recovery = priorWindow_(recoveryRows, latestDate, 7, 28);
@@ -149,17 +151,29 @@ function buildDashboardData() {
 
   return {
     updated: formatDate_(latestDate),
-    recovery: round_(recovery7, 1),
+    // Primary tiles show the latest morning values.
+    recovery: round_(latestRecovery.recovery, 1),
+    recovery_7d_avg: round_(recovery7, 1),
     recovery_delta: round_(recoveryDelta, 1),
-    hrv: round_(hrv7, 1),
+
+    hrv: round_(latestRecovery.hrv, 1),
+    hrv_7d_avg: round_(hrv7, 1),
     hrv_delta_pct: round_(hrvDeltaPct, 1),
-    rhr: round_(rhr7, 1),
+
+    rhr: round_(latestRecovery.rhr, 1),
+    rhr_7d_avg: round_(rhr7, 1),
     rhr_delta: round_(rhrDelta, 1),
-    sleep_hours: round_(sleep7, 2),
-    sleep_display: formatHours_(sleep7),
+
+    sleep_hours: latestSleep ? round_(latestSleep.sleepHours, 2) : null,
+    sleep_display: latestSleep ? formatHours_(latestSleep.sleepHours) : '—',
+    sleep_7d_avg_hours: round_(sleep7, 2),
+    sleep_7d_avg_display: formatHours_(sleep7),
     sleep_delta_minutes: round_(sleepDeltaMinutes, 0),
-    sleep_debt_hours: round_(debt7, 2),
-    sleep_debt_display: formatHours_(debt7),
+
+    sleep_debt_hours: latestSleep ? round_(latestSleep.sleepDebtHours, 2) : round_(debt7, 2),
+    sleep_debt_display: latestSleep ? formatHours_(latestSleep.sleepDebtHours) : formatHours_(debt7),
+    sleep_debt_7d_avg_hours: round_(debt7, 2),
+    sleep_debt_7d_avg_display: formatHours_(debt7),
     steps: Math.round(steps7 || 0),
     steps_delta_pct: round_(stepsDeltaPct, 1),
     status,

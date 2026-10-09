@@ -3,6 +3,7 @@ const SLEEP_FILE_ID    = '1dUrWISEXN2rs3Bvtl2z6YVXENSpL-ioo';
 const CYCLES_FILE_ID   = '1LJXb--dY7VZbosQ5lGlXdCfehKmY91tK';
 const WORKOUTS_FILE_ID = '1GUBdlVVBV4n_iRyfkg_LFspQX6_VVkPz';
 const TZ = 'Asia/Dubai';
+const ANALYTICS_VERSION = '2026.10.09-v1';
 
 function doGet(e) {
   const data = buildDashboardData();
@@ -163,6 +164,28 @@ function buildDashboardData() {
     stepDriver: findDriver_(drivers, '6–8k vs <4k steps')
   });
 
+  const signalState90 = build90DaySignalState_(daily);
+
+  const latestRecoveryAgeHours = latestRecovery.createdAt && !isNaN(latestRecovery.createdAt.getTime())
+    ? (Date.now() - latestRecovery.createdAt.getTime()) / 3600000
+    : NaN;
+
+  const recoveryDayKeys = recoveryRows.map(r => dateKey_(r.date));
+  const duplicateRecoveryRows = recoveryDayKeys.length - uniqueCount_(recoveryDayKeys);
+
+  const qaChecks = [
+    { key: 'latest_recovery', pass: finite_(latestRecovery.recovery), value: round_(latestRecovery.recovery, 1) },
+    { key: 'recovery_7d_coverage', pass: last7Recovery.length >= 5, value: last7Recovery.length, expected: '>=5' },
+    { key: 'recovery_prior28_coverage', pass: prior28Recovery.length >= 20, value: prior28Recovery.length, expected: '>=20' },
+    { key: 'sleep_7d_coverage', pass: last7Sleep.length >= 5, value: last7Sleep.length, expected: '>=5' },
+    { key: 'trajectory_points', pass: trajectory.length >= 10, value: trajectory.length, expected: '>=10' },
+    { key: 'signal_90d_count', pass: signalState90.length >= 4, value: signalState90.length, expected: '>=4' },
+    { key: 'recovery_freshness_hours', pass: finite_(latestRecoveryAgeHours) && latestRecoveryAgeHours <= 36, value: round_(latestRecoveryAgeHours, 1), expected: '<=36' },
+    { key: 'duplicate_recovery_rows', pass: duplicateRecoveryRows === 0, value: duplicateRecoveryRows, expected: '0' }
+  ];
+
+  const qaStatus = qaChecks.every(x => x.pass) ? 'PASS' : 'WARN';
+
   return {
     updated: formatDate_(latestDate),
     // Primary tiles show the latest morning values.
@@ -196,7 +219,24 @@ function buildDashboardData() {
     movement,
     drivers,
     conclusions,
-    signal_state_90d: build90DaySignalState_(daily),
+    signal_state_90d: signalState90,
+    qa: {
+      status: qaStatus,
+      analytics_version: ANALYTICS_VERSION,
+      checks: qaChecks,
+      windows: {
+        latest_date: formatDate_(latestDate),
+        recovery_7d_start: formatDate_(addDays_(latestDate, -6)),
+        recovery_7d_end: formatDate_(latestDate),
+        prior_28d_start: formatDate_(addDays_(latestDate, -34)),
+        prior_28d_end: formatDate_(addDays_(latestDate, -7)),
+        trajectory_points: trajectory.length,
+        signal_recent_45d_start: formatDate_(addDays_(latestDate, -44)),
+        signal_recent_45d_end: formatDate_(latestDate),
+        signal_prior_45d_start: formatDate_(addDays_(latestDate, -89)),
+        signal_prior_45d_end: formatDate_(addDays_(latestDate, -45))
+      }
+    },
     metadata: {
       recovery_days: recoveryRows.length,
       sleep_days: sleepRows.length,
@@ -507,4 +547,8 @@ function formatHours_(hours) {
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   return h + 'h ' + String(m).padStart(2, '0') + 'm';
+}
+
+function uniqueCount_(arr) {
+  return [...new Set(arr)].length;
 }

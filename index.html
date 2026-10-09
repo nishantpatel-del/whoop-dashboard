@@ -93,10 +93,10 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}.ch
   </div>
 
   <section class="grid4">
-    <div class="card"><div class="label">Recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta" id="recovery-delta">+2.9 pts</div></div>
-    <div class="card"><div class="label">HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta" id="hrv-delta">−2.5%</div></div>
-    <div class="card"><div class="label">RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta" id="rhr-delta">7-day average</div></div>
-    <div class="card"><div class="label">Actual sleep</div><div class="value" id="sleep-value">6h 40m</div><div class="delta" id="sleep-delta">7-day average</div></div>
+    <div class="card"><div class="label">Recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta" id="recovery-delta">7d avg 62.1 · +2.9 pts vs prior 28d</div></div>
+    <div class="card"><div class="label">HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta" id="hrv-delta">7d avg 72.5 ms · −2.5% vs prior 28d</div></div>
+    <div class="card"><div class="label">RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta" id="rhr-delta">7d avg 56.0 bpm</div></div>
+    <div class="card"><div class="label">Last night sleep</div><div class="value" id="sleep-value">6h 40m</div><div class="delta" id="sleep-delta">7d avg 6h 40m</div></div>
   </section>
 
   <section class="chart-card">
@@ -244,13 +244,28 @@ function displayWhoopData(data, source) {
   if (!data || typeof data !== 'object') return;
 
   if (data.recovery != null) document.getElementById('recovery-value').textContent = data.recovery;
-  if (data.recovery_delta != null) document.getElementById('recovery-delta').textContent = fmtSigned(data.recovery_delta, ' pts');
+  if (data.recovery_7d_avg != null) {
+    document.getElementById('recovery-delta').textContent =
+      '7d avg ' + data.recovery_7d_avg + ' · ' + fmtSigned(data.recovery_delta, ' pts vs prior 28d');
+  }
+
   if (data.hrv != null) document.getElementById('hrv-value').textContent = data.hrv + ' ms';
-  if (data.hrv_delta_pct != null) document.getElementById('hrv-delta').textContent = fmtSigned(data.hrv_delta_pct, '%');
+  if (data.hrv_7d_avg != null) {
+    document.getElementById('hrv-delta').textContent =
+      '7d avg ' + data.hrv_7d_avg + ' ms · ' + fmtSigned(data.hrv_delta_pct, '% vs prior 28d');
+  }
+
   if (data.rhr != null) document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
-  if (data.rhr_delta != null) document.getElementById('rhr-delta').textContent = fmtSigned(data.rhr_delta, ' bpm vs prior 28d');
+  if (data.rhr_7d_avg != null) {
+    document.getElementById('rhr-delta').textContent =
+      '7d avg ' + data.rhr_7d_avg + ' bpm · ' + fmtSigned(data.rhr_delta, ' bpm vs prior 28d');
+  }
+
   if (data.sleep_display) document.getElementById('sleep-value').textContent = data.sleep_display;
-  if (data.sleep_delta_minutes != null) document.getElementById('sleep-delta').textContent = fmtSigned(data.sleep_delta_minutes, ' min');
+  if (data.sleep_7d_avg_display) {
+    document.getElementById('sleep-delta').textContent =
+      '7d avg ' + data.sleep_7d_avg_display + ' · ' + fmtSigned(data.sleep_delta_minutes, ' min vs prior 28d');
+  }
   if (data.status) document.getElementById('status-value').textContent = data.status;
   if (data.sleep_debt_display) document.getElementById('debt-value').textContent = data.sleep_debt_display;
   if (data.steps != null) document.getElementById('steps-value').textContent = Number(data.steps).toLocaleString('en-GB');

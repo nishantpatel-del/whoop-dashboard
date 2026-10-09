@@ -86,10 +86,10 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
   <div class="sub">Snapshot through 6 October 2026 · latest 7 days vs preceding 28 days</div>
 
   <section class="grid4">
-    <div class="card"><div class="label">Recovery</div><div class="value">62.1</div><div class="delta">+2.9 pts</div></div>
-    <div class="card"><div class="label">HRV</div><div class="value">72.5 ms</div><div class="delta">−2.5%</div></div>
-    <div class="card"><div class="label">RHR</div><div class="value">56.0 bpm</div><div class="delta">essentially flat</div></div>
-    <div class="card"><div class="label">Actual sleep</div><div class="value">6h 40m</div><div class="delta">+4 min</div></div>
+    <div class="card"><div class="label">Recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta">+2.9 pts</div></div>
+    <div class="card"><div class="label">HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta">−2.5%</div></div>
+    <div class="card"><div class="label">RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta">essentially flat</div></div>
+    <div class="card"><div class="label">Actual sleep</div><div class="value" id="sleep-value">6h 40m</div><div class="delta">+4 min</div></div>
   </section>
 
   <section class="chart-card">
@@ -166,5 +166,16 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
 
   <footer>WHOOP longitudinal dashboard · snapshot through 6 Oct 2026. Associations shown are observational and should not be interpreted as causal.</footer>
 </main>
+  <script>
+fetch('./data.json?ts=' + Date.now())
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('recovery-value').textContent = data.recovery;
+    document.getElementById('hrv-value').textContent = data.hrv + ' ms';
+    document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
+    document.getElementById('sleep-value').textContent = data.sleep_display;
+  })
+  .catch(error => console.error('Dashboard data load failed:', error));
+</script>
 </body>
 </html>

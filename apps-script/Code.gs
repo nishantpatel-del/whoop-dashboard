@@ -28,6 +28,7 @@ function buildDashboardData() {
   const recoveryRows = readCsv_(RECOVERY_FILE_ID)
     .map(r => ({
       date: localDate_(r.created_at),
+      createdAt: new Date(r.created_at),
       recovery: num_(r['score.recovery_score']),
       hrv: num_(r['score.hrv_rmssd_milli']),
       rhr: num_(r['score.resting_heart_rate'])
@@ -45,6 +46,7 @@ function buildDashboardData() {
       const sws = num_(r['score.stage_summary.total_slow_wave_sleep_time_milli']);
       return {
         date: localDate_(r.created_at),
+        createdAt: new Date(r.created_at),
         sleepHours: (light + rem + sws) / 3600000,
         sleepDebtHours: num_(r['score.sleep_needed.need_from_sleep_debt_milli']) / 3600000,
         performance: num_(r['score.sleep_performance_percentage']),
@@ -71,9 +73,21 @@ function buildDashboardData() {
     .filter(r => r.date)
     .sort(byDate_);
 
-  const latestDate = recoveryRows[recoveryRows.length - 1].date;
-  const latestRecovery = recoveryRows[recoveryRows.length - 1];
-  const latestSleep = [...sleepRows].reverse().find(r => r.date <= latestDate) || null;
+  const latestRecovery = [...recoveryRows].sort((a,b) => {
+    const ta = a.createdAt && !isNaN(a.createdAt.getTime()) ? a.createdAt.getTime() : a.date.getTime();
+    const tb = b.createdAt && !isNaN(b.createdAt.getTime()) ? b.createdAt.getTime() : b.date.getTime();
+    return tb - ta;
+  })[0];
+
+  const latestDate = latestRecovery.date;
+
+  const latestSleep = [...sleepRows]
+    .filter(r => r.date <= latestDate)
+    .sort((a,b) => {
+      const ta = a.createdAt && !isNaN(a.createdAt.getTime()) ? a.createdAt.getTime() : a.date.getTime();
+      const tb = b.createdAt && !isNaN(b.createdAt.getTime()) ? b.createdAt.getTime() : b.date.getTime();
+      return tb - ta;
+    })[0] || null;
 
   const last7Recovery = dateWindow_(recoveryRows, latestDate, 7);
   const prior28Recovery = priorWindow_(recoveryRows, latestDate, 7, 28);
@@ -188,7 +202,9 @@ function buildDashboardData() {
       sleep_days: sleepRows.length,
       cycle_days: cycleRows.length,
       workouts: workoutRows.length,
-      generated_at: new Date().toISOString()
+      generated_at: new Date().toISOString(),
+      latest_recovery_created_at: latestRecovery.createdAt && !isNaN(latestRecovery.createdAt.getTime()) ? latestRecovery.createdAt.toISOString() : null,
+      latest_recovery_score: round_(latestRecovery.recovery, 1)
     }
   };
 }

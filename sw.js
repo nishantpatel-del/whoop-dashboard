@@ -1,4 +1,4 @@
-const CACHE_NAME = 'whoop-dashboard-v2';
+const CACHE_NAME = 'whoop-dashboard-v3';
 
 self.addEventListener('install', event => {
   self.skipWaiting();

@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
+<head>
 <link rel="manifest" href="./manifest.webmanifest">
-<meta name="theme-color" content="#101820">
+<meta name="theme-color" content="#090b0e">
 <script src="./pwa.js" defer></script>
-  <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090b0e">
@@ -32,7 +32,8 @@ body{
 main{max-width:1180px;margin:0 auto;padding:24px}
 .eyebrow{color:var(--lime);font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
 h1{font-size:clamp(30px,4vw,52px);line-height:1.05;margin:8px 0 6px;letter-spacing:-.04em}
-.sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:14px}
+.live-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.live-pill{border:1px solid var(--border);background:var(--card2);border-radius:999px;padding:6px 10px;font-size:11px;color:var(--muted)}.live-pill b{color:var(--text)}.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}.live-dot.loading{background:var(--orange)}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .card{
   background:var(--card);
@@ -83,18 +84,24 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
 <main>
   <div class="eyebrow">WHOOP / LONGITUDINAL</div>
   <h1>Performance dashboard</h1>
-  <div class="sub">Snapshot through 6 October 2026 · latest 7 days vs preceding 28 days</div>
+  <div class="sub" id="snapshot-sub">Snapshot through 6 October 2026 · latest 7 days vs preceding 28 days</div>
+  <div class="live-row">
+    <span class="live-pill"><i class="live-dot loading" id="live-dot"></i><b id="live-state">Loading live WHOOP data…</b></span>
+    <span class="live-pill">Status <b id="status-value">STABLE</b></span>
+    <span class="live-pill">Sleep debt <b id="debt-value">1h 13m</b></span>
+    <span class="live-pill">Steps <b id="steps-value">5,408</b></span>
+  </div>
 
   <section class="grid4">
-    <div class="card"><div class="label">Recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta">+2.9 pts</div></div>
-    <div class="card"><div class="label">HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta">−2.5%</div></div>
-    <div class="card"><div class="label">RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta">essentially flat</div></div>
-    <div class="card"><div class="label">Actual sleep</div><div class="value" id="sleep-value">6h 40m</div><div class="delta">+4 min</div></div>
+    <div class="card"><div class="label">Recovery</div><div class="value" id="recovery-value">62.1</div><div class="delta" id="recovery-delta">+2.9 pts</div></div>
+    <div class="card"><div class="label">HRV</div><div class="value" id="hrv-value">72.5 ms</div><div class="delta" id="hrv-delta">−2.5%</div></div>
+    <div class="card"><div class="label">RHR</div><div class="value" id="rhr-value">56.0 bpm</div><div class="delta" id="rhr-delta">7-day average</div></div>
+    <div class="card"><div class="label">Actual sleep</div><div class="value" id="sleep-value">6h 40m</div><div class="delta" id="sleep-delta">7-day average</div></div>
   </section>
 
   <section class="chart-card">
     <div class="section">
-      <h2>12-week physiological trajectory</h2>
+      <h2>12-week physiological trajectory <span class="badge" id="trajectory-mode">snapshot</span></h2>
       <p>Weekly average relative to rolling 28-day personal baseline. RHR inverted so positive = lower/better RHR.</p>
     </div>
     <svg viewBox="0 0 760 250" width="100%" role="img" aria-label="12-week trend chart">
@@ -127,7 +134,7 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
 
   <div class="two">
     <section class="card">
-      <div class="section"><h2>Sleep dose → recovery</h2><p>Average morning recovery by actual sleep duration.</p></div>
+      <div class="section"><h2>Sleep dose → recovery <span class="badge" id="sleep-dose-mode">snapshot</span></h2><p>Average morning recovery by actual sleep duration.</p></div>
       <div class="bars">
         <div class="bar-row"><span>&lt;6.5h</span><div class="track"><div class="fill" style="width:73%;background:#73a9ff"></div></div><b>56.7</b></div>
         <div class="bar-row"><span>6.5–7h</span><div class="track"><div class="fill" style="width:72%;background:#73a9ff"></div></div><b>55.6</b></div>
@@ -139,7 +146,7 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
     </section>
 
     <section class="card">
-      <div class="section"><h2>Recovery drivers</h2><p>Associations, not causation.</p></div>
+      <div class="section"><h2>Recovery drivers <span class="badge" id="drivers-mode">snapshot</span></h2><p>Associations, not causation.</p></div>
       <div class="driver"><span class="name">Sleep debt &lt;1h <span class="badge">STRONG</span></span><span class="impact">+13.7</span><span class="meta">n=38</span></div>
       <div class="driver"><span class="name">Actual sleep ≥7h <span class="badge">STRONG</span></span><span class="impact">+10.4</span><span class="meta">n=35</span></div>
       <div class="driver"><span class="name">Cycling prior day <span class="badge">WATCH</span></span><span class="impact">+18.7</span><span class="meta">n=10 · insufficient sample</span></div>
@@ -149,7 +156,7 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
   </div>
 
   <section class="card" style="margin-top:12px">
-    <div class="section"><h2>Movement</h2><p>Daily steps appear more useful than logged walk duration alone.</p></div>
+    <div class="section"><h2>Movement <span class="badge" id="movement-mode">snapshot</span></h2><p>Daily steps appear more useful than logged walk duration alone.</p></div>
     <div class="bars">
       <div class="bar-row"><span>&lt;4k</span><div class="track"><div class="fill" style="width:73%;background:#71d99a"></div></div><b>56.9</b></div>
       <div class="bar-row"><span>4–6k</span><div class="track"><div class="fill" style="width:74%;background:#71d99a"></div></div><b>57.7</b></div>
@@ -164,27 +171,75 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
     <div class="card"><div class="kicker">03 · What to test</div><h3>Lift → ≥7h sleep + &lt;1h sleep debt.</h3><p>Compare next-morning recovery, HRV and RHR against lifting days where either sleep condition is missed.</p></div>
   </section>
 
-  <footer>WHOOP longitudinal dashboard · snapshot through 6 Oct 2026. Associations shown are observational and should not be interpreted as causal.</footer>
+  <footer>WHOOP longitudinal dashboard · <span id="footer-date">snapshot through 6 Oct 2026</span>. Associations shown are observational and should not be interpreted as causal.</footer>
 </main>
   <script>
-function whoopDashboardData(data) {
-  document.getElementById('recovery-value').textContent = data.recovery;
-  document.getElementById('hrv-value').textContent = data.hrv + ' ms';
-  document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
-  document.getElementById('sleep-value').textContent = data.sleep_display;
+const WHOOP_API = 'https://script.google.com/macros/s/AKfycbxmArezXMCVJ8mzNe7M5XBDtco6Y6AE9ud6ywrBcuKy2kBNFdIZclj7pj34PaooWorn/exec';
+
+function fmtSigned(value, suffix) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return '—';
+  const sign = n > 0 ? '+' : '';
+  return sign + n.toFixed(1) + suffix;
 }
 
+function fmtDate(iso) {
+  if (!iso) return '';
+  const parts = String(iso).split('-').map(Number);
+  if (parts.length !== 3 || parts.some(x => !Number.isFinite(x))) return iso;
+  return new Date(Date.UTC(parts[0], parts[1]-1, parts[2])).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'});
+}
+
+function displayWhoopData(data, source) {
+  if (!data || typeof data !== 'object') return;
+
+  if (data.recovery != null) document.getElementById('recovery-value').textContent = data.recovery;
+  if (data.recovery_delta != null) document.getElementById('recovery-delta').textContent = fmtSigned(data.recovery_delta, ' pts');
+
+  if (data.hrv != null) document.getElementById('hrv-value').textContent = data.hrv + ' ms';
+  if (data.hrv_delta_pct != null) document.getElementById('hrv-delta').textContent = fmtSigned(data.hrv_delta_pct, '%');
+
+  if (data.rhr != null) document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
+  if (data.sleep_display) document.getElementById('sleep-value').textContent = data.sleep_display;
+
+  if (data.status) document.getElementById('status-value').textContent = data.status;
+  if (data.sleep_debt_display) document.getElementById('debt-value').textContent = data.sleep_debt_display;
+  if (data.steps != null) document.getElementById('steps-value').textContent = Number(data.steps).toLocaleString('en-GB');
+
+  if (data.updated) {
+    const pretty = fmtDate(data.updated);
+    document.getElementById('snapshot-sub').textContent = 'Through ' + pretty + ' · latest 7 days vs preceding 28 days';
+    document.getElementById('footer-date').textContent = 'data through ' + pretty;
+  }
+
+  document.getElementById('live-state').textContent = source === 'cache' ? 'Last WHOOP data' : 'Live WHOOP data';
+  document.getElementById('live-dot').classList.remove('loading');
+
+  if (Array.isArray(data.trajectory)) document.getElementById('trajectory-mode').textContent = 'live';
+  if (Array.isArray(data.sleep_dose)) document.getElementById('sleep-dose-mode').textContent = 'live';
+  if (Array.isArray(data.drivers)) document.getElementById('drivers-mode').textContent = 'live';
+  if (Array.isArray(data.movement)) document.getElementById('movement-mode').textContent = 'live';
+}
+
+function whoopDashboardData(data) {
+  displayWhoopData(data, 'live');
+  try { localStorage.setItem('whoop-dashboard-data', JSON.stringify(data)); } catch (e) {}
+  if (window.whoopScriptElement) window.whoopScriptElement.remove();
+}
+
+try {
+  const cached = localStorage.getItem('whoop-dashboard-data');
+  if (cached) displayWhoopData(JSON.parse(cached), 'cache');
+} catch (e) {}
+
 const whoopScript = document.createElement('script');
-
-whoopScript.src =
-  'https://script.google.com/macros/s/AKfycbxmArezXMCVJ8mzNe7M5XBDtco6Y6AE9ud6ywrBcuKy2kBNFdIZclj7pj34PaooWorn/exec' +
-  '?callback=whoopDashboardData&ts=' +
-  Date.now();
-
+whoopScript.src = WHOOP_API + '?callback=whoopDashboardData&ts=' + Date.now();
 whoopScript.onerror = function () {
-  console.error('WHOOP live data load failed');
+  document.getElementById('live-state').textContent = 'Using last WHOOP data';
+  document.getElementById('live-dot').classList.add('loading');
+  console.error('WHOOP live data refresh failed');
 };
-
+window.whoopScriptElement = whoopScript;
 document.body.appendChild(whoopScript);
 </script>
 </body>

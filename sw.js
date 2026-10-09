@@ -1,21 +1,45 @@
-// No dashboard or API caching: health data continues to come from the network.
-// Leave updates waiting until existing app windows close.
+const CACHE_NAME = 'whoop-dashboard-v2';
+
+self.addEventListener('install', event => {
+  self.skipWaiting();
+});
+
 self.addEventListener('activate', event => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME)
+          .map(key => caches.delete(key))
+      )
+    )
+  );
+
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  if (event.request.method !== 'GET' || event.request.mode !== 'navigate' ||
-      !url.href.startsWith(self.registration.scope)) return;
 
-  event.respondWith(fetch(event.request).catch(() => new Response(
-    '<!doctype html><html lang="en"><meta charset="utf-8">' +
-    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<meta name="theme-color" content="#101820"><title>WHOOP Dashboard — Offline</title>' +
-    '<body style="margin:0;background:#101820;color:#fff;font:18px system-ui;padding:40px 24px">' +
-    '<h1>You’re offline</h1><p>Reconnect to load your WHOOP dashboard.</p>' +
-    '<p><a href="" style="color:#66e5b5">Try again</a></p></body></html>',
-    { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } }
-  )));
+  // Always fetch live WHOOP data from the network
+  if (url.pathname.endsWith('/data.json')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Normal app files: network first, cache fallback
+  event.respondWith(
+    fetch(event.request)
+      .then(response => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, copy);
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request))
+  );
 });

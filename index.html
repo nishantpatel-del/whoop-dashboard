@@ -67,7 +67,7 @@ h1{font-size:clamp(30px,4vw,52px);line-height:1.05;margin:8px 0 6px;letter-spaci
 .kicker{font-size:11px;color:var(--lime);font-weight:800;letter-spacing:.12em;text-transform:uppercase}
 .conclusions h3{margin:8px 0 8px;font-size:16px}
 .conclusions p{font-size:13px;line-height:1.5;color:var(--muted)}
-footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
+footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}.chart-labels{fill:var(--muted);font-size:10px}.empty-note{color:var(--muted);font-size:12px;padding:10px 0}
 @media(max-width:800px){
   main{padding:16px}
   .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -114,16 +114,10 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
         <text x="8" y="42">+20%</text><text x="16" y="86">+10</text><text x="34" y="130">0</text>
         <text x="16" y="174">−10</text><text x="16" y="218">−20</text>
       </g>
-      <polyline points="52,35 115,134 178,171 241,65 304,78 367,135 430,128 493,180 556,137 619,142 682,125 742,145"
-                fill="none" stroke="#d7ff4f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <polyline points="52,101 115,130 178,124 241,113 304,129 367,119 430,118 493,118 556,132 619,144 682,123 742,132"
-                fill="none" stroke="#73a9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <polyline points="52,74 115,210 178,164 241,108 304,54 367,143 430,105 493,203 556,94 619,133 682,90 742,131"
-                fill="none" stroke="#ff9e64" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <g fill="#8d98a5" font-size="10">
-        <text x="52" y="239">19 Jul</text><text x="231" y="239">9 Aug</text><text x="420" y="239">30 Aug</text>
-        <text x="608" y="239">20 Sep</text><text x="710" y="239">4 Oct</text>
-      </g>
+      <polyline id="trajectory-hrv" points="52,35 115,134 178,171 241,65 304,78 367,135 430,128 493,180 556,137 619,142 682,125 742,145" fill="none" stroke="#d7ff4f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline id="trajectory-rhr" points="52,101 115,130 178,124 241,113 304,129 367,119 430,118 493,118 556,132 619,144 682,123 742,132" fill="none" stroke="#73a9ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline id="trajectory-recovery" points="52,74 115,210 178,164 241,108 304,54 367,143 430,105 493,203 556,94 619,133 682,90 742,131" fill="none" stroke="#ff9e64" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <g id="trajectory-labels" class="chart-labels"><text x="52" y="239">19 Jul</text><text x="231" y="239">9 Aug</text><text x="420" y="239">30 Aug</text><text x="608" y="239">20 Sep</text><text x="710" y="239">4 Oct</text></g>
     </svg>
     <div class="legend">
       <span><i class="dot" style="background:#d7ff4f"></i>HRV</span>
@@ -135,29 +129,25 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
   <div class="two">
     <section class="card">
       <div class="section"><h2>Sleep dose → recovery <span class="badge" id="sleep-dose-mode">snapshot</span></h2><p>Average morning recovery by actual sleep duration.</p></div>
-      <div class="bars">
+      <div class="bars" id="sleep-dose-bars">
         <div class="bar-row"><span>&lt;6.5h</span><div class="track"><div class="fill" style="width:73%;background:#73a9ff"></div></div><b>56.7</b></div>
         <div class="bar-row"><span>6.5–7h</span><div class="track"><div class="fill" style="width:72%;background:#73a9ff"></div></div><b>55.6</b></div>
         <div class="bar-row"><span>7–7.5h</span><div class="track"><div class="fill" style="width:86%;background:#73a9ff"></div></div><b>66.7</b></div>
         <div class="bar-row"><span>7.5–8h</span><div class="track"><div class="fill" style="width:82%;background:#73a9ff"></div></div><b>63.5</b></div>
         <div class="bar-row"><span>≥8h</span><div class="track"><div class="fill" style="width:100%;background:#73a9ff"></div></div><b>76.8</b></div>
       </div>
-      <p style="margin-top:12px;color:#8d98a5;font-size:12px">Strongest current sleep signal: <b style="color:#f5f7f9">sleep debt &lt;1h → +13.7 recovery points</b>.</p>
+      <p id="sleep-signal" style="margin-top:12px;color:#8d98a5;font-size:12px">Strongest current sleep signal: <b style="color:#f5f7f9">sleep debt &lt;1h → +13.7 recovery points</b>.</p>
     </section>
 
     <section class="card">
       <div class="section"><h2>Recovery drivers <span class="badge" id="drivers-mode">snapshot</span></h2><p>Associations, not causation.</p></div>
-      <div class="driver"><span class="name">Sleep debt &lt;1h <span class="badge">STRONG</span></span><span class="impact">+13.7</span><span class="meta">n=38</span></div>
-      <div class="driver"><span class="name">Actual sleep ≥7h <span class="badge">STRONG</span></span><span class="impact">+10.4</span><span class="meta">n=35</span></div>
-      <div class="driver"><span class="name">Cycling prior day <span class="badge">WATCH</span></span><span class="impact">+18.7</span><span class="meta">n=10 · insufficient sample</span></div>
-      <div class="driver"><span class="name">Weightlifting prior day <span class="badge">STRONG</span></span><span class="impact">−8.6</span><span class="meta">n=45</span></div>
-      <div class="driver"><span class="name">Prior strain ≥16 <span class="badge">STRONG</span></span><span class="impact">−10.7</span><span class="meta">n=33</span></div>
+      <div id="drivers-list"><div class="driver"><span class="name">Sleep debt &lt;1h <span class="badge">STRONG</span></span><span class="impact">+13.7</span><span class="meta">n=38</span></div><div class="driver"><span class="name">Actual sleep ≥7h <span class="badge">STRONG</span></span><span class="impact">+10.4</span><span class="meta">n=35</span></div><div class="driver"><span class="name">Cycling prior day <span class="badge">WATCH</span></span><span class="impact">+18.7</span><span class="meta">n=10 · insufficient sample</span></div><div class="driver"><span class="name">Weightlifting prior day <span class="badge">STRONG</span></span><span class="impact">−8.6</span><span class="meta">n=45</span></div><div class="driver"><span class="name">Prior strain ≥16 <span class="badge">STRONG</span></span><span class="impact">−10.7</span><span class="meta">n=33</span></div></div>
     </section>
   </div>
 
   <section class="card" style="margin-top:12px">
     <div class="section"><h2>Movement <span class="badge" id="movement-mode">snapshot</span></h2><p>Daily steps appear more useful than logged walk duration alone.</p></div>
-    <div class="bars">
+    <div class="bars" id="movement-bars">
       <div class="bar-row"><span>&lt;4k</span><div class="track"><div class="fill" style="width:73%;background:#71d99a"></div></div><b>56.9</b></div>
       <div class="bar-row"><span>4–6k</span><div class="track"><div class="fill" style="width:74%;background:#71d99a"></div></div><b>57.7</b></div>
       <div class="bar-row"><span>6–8k</span><div class="track"><div class="fill" style="width:78%;background:#71d99a"></div></div><b>60.4</b></div>
@@ -165,11 +155,7 @@ footer{color:var(--muted);font-size:11px;margin-top:18px;padding-bottom:24px}
     </div>
   </section>
 
-  <section class="conclusions">
-    <div class="card"><div class="kicker">01 · What changed</div><h3>Recovery improved, physiology is still broadly stable.</h3><p>Recovery is up, but HRV and RHR do not confirm a clear underlying physiological upswing yet.</p></div>
-    <div class="card"><div class="kicker">02 · What we learned</div><h3>Sleep debt and ≥7h actual sleep remain the strongest actionable levers.</h3><p>Training load also matters materially. Walking in the 6–8k step range is a possible positive signal, but not yet prescriptive.</p></div>
-    <div class="card"><div class="kicker">03 · What to test</div><h3>Lift → ≥7h sleep + &lt;1h sleep debt.</h3><p>Compare next-morning recovery, HRV and RHR against lifting days where either sleep condition is missed.</p></div>
-  </section>
+  <section class="conclusions" id="conclusions-list"><div class="card"><div class="kicker">01 · What changed</div><h3>Recovery improved, physiology is still broadly stable.</h3><p>Recovery is up, but HRV and RHR do not confirm a clear underlying physiological upswing yet.</p></div><div class="card"><div class="kicker">02 · What we learned</div><h3>Sleep debt and ≥7h actual sleep remain the strongest actionable levers.</h3><p>Training load also matters materially. Walking in the 6–8k step range is a possible positive signal, but not yet prescriptive.</p></div><div class="card"><div class="kicker">03 · What to test</div><h3>Lift → ≥7h sleep + &lt;1h sleep debt.</h3><p>Compare next-morning recovery, HRV and RHR against lifting days where either sleep condition is missed.</p></div></section>
 
   <footer>WHOOP longitudinal dashboard · <span id="footer-date">snapshot through 6 Oct 2026</span>. Associations shown are observational and should not be interpreted as causal.</footer>
 </main>
@@ -190,18 +176,81 @@ function fmtDate(iso) {
   return new Date(Date.UTC(parts[0], parts[1]-1, parts[2])).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'});
 }
 
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+function renderTrajectory(rows) {
+  if (!Array.isArray(rows) || rows.length < 2) return;
+  const left=52, right=742, top=38, bottom=214, mid=126;
+  const vals = rows.flatMap(r => [Number(r.hrv), Number(r.rhr), Number(r.recovery)]).filter(Number.isFinite);
+  const maxAbs = Math.max(10, ...vals.map(v => Math.abs(v)));
+  const scale = (bottom-top)/2 / (maxAbs*1.15);
+  const x = i => left + (right-left) * i / (rows.length-1);
+  const y = v => clamp(mid - Number(v)*scale, top, bottom);
+  const pts = key => rows.map((r,i) => x(i).toFixed(1)+','+y(r[key]).toFixed(1)).join(' ');
+  document.getElementById('trajectory-hrv').setAttribute('points', pts('hrv'));
+  document.getElementById('trajectory-rhr').setAttribute('points', pts('rhr'));
+  document.getElementById('trajectory-recovery').setAttribute('points', pts('recovery'));
+
+  const g = document.getElementById('trajectory-labels');
+  g.innerHTML = '';
+  const show = [...new Set([0, Math.floor((rows.length-1)/3), Math.floor((rows.length-1)*2/3), rows.length-1])];
+  show.forEach(i => {
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x', x(i));
+    t.setAttribute('y', '239');
+    t.textContent = rows[i].label || rows[i].date || '';
+    g.appendChild(t);
+  });
+  document.getElementById('trajectory-mode').textContent = 'live';
+}
+
+function renderBars(containerId, rows, color) {
+  if (!Array.isArray(rows) || !rows.length) return;
+  const max = Math.max(...rows.map(r => Number(r.recovery) || 0), 1);
+  document.getElementById(containerId).innerHTML = rows.map(r => {
+    const width = clamp(((Number(r.recovery)||0)/max)*100, 4, 100);
+    return '<div class="bar-row"><span>'+esc(r.label)+'</span><div class="track"><div class="fill" style="width:'+width+'%;background:'+color+'"></div></div><b>'+esc(r.recovery)+'</b></div>';
+  }).join('');
+}
+
+function renderDrivers(rows) {
+  if (!Array.isArray(rows) || !rows.length) return;
+  const sorted = [...rows].sort((a,b) => Math.abs(Number(b.effect)||0)-Math.abs(Number(a.effect)||0));
+  document.getElementById('drivers-list').innerHTML = sorted.map(d => {
+    const effect = Number(d.effect);
+    const sign = effect > 0 ? '+' : '';
+    const ntext = d.nA != null ? 'n='+d.nA+' vs '+d.nB : 'n='+d.n;
+    return '<div class="driver"><span class="name">'+esc(d.name)+' <span class="badge">'+esc(d.strength||'')+'</span></span><span class="impact">'+sign+(Number.isFinite(effect)?effect.toFixed(1):'—')+'</span><span class="meta">'+esc(ntext)+'</span></div>';
+  }).join('');
+  document.getElementById('drivers-mode').textContent = 'live';
+
+  const sleep = rows.find(d => d.name === 'Sleep debt <1h');
+  if (sleep && Number.isFinite(Number(sleep.effect))) {
+    const e = Number(sleep.effect);
+    document.getElementById('sleep-signal').innerHTML = 'Strongest current sleep signal: <b style="color:#f5f7f9">sleep debt &lt;1h → '+(e>0?'+':'')+e.toFixed(1)+' recovery points</b>.';
+  }
+}
+
+function renderConclusions(rows) {
+  if (!Array.isArray(rows) || rows.length < 3) return;
+  const labels = ['01 · What changed','02 · What we learned','03 · What to test'];
+  document.getElementById('conclusions-list').innerHTML = rows.slice(0,3).map((r,i) =>
+    '<div class="card"><div class="kicker">'+labels[i]+'</div><h3>'+esc(r.title)+'</h3><p>'+esc(r.body)+'</p></div>'
+  ).join('');
+}
+
 function displayWhoopData(data, source) {
   if (!data || typeof data !== 'object') return;
 
   if (data.recovery != null) document.getElementById('recovery-value').textContent = data.recovery;
   if (data.recovery_delta != null) document.getElementById('recovery-delta').textContent = fmtSigned(data.recovery_delta, ' pts');
-
   if (data.hrv != null) document.getElementById('hrv-value').textContent = data.hrv + ' ms';
   if (data.hrv_delta_pct != null) document.getElementById('hrv-delta').textContent = fmtSigned(data.hrv_delta_pct, '%');
-
   if (data.rhr != null) document.getElementById('rhr-value').textContent = data.rhr + ' bpm';
+  if (data.rhr_delta != null) document.getElementById('rhr-delta').textContent = fmtSigned(data.rhr_delta, ' bpm vs prior 28d');
   if (data.sleep_display) document.getElementById('sleep-value').textContent = data.sleep_display;
-
+  if (data.sleep_delta_minutes != null) document.getElementById('sleep-delta').textContent = fmtSigned(data.sleep_delta_minutes, ' min');
   if (data.status) document.getElementById('status-value').textContent = data.status;
   if (data.sleep_debt_display) document.getElementById('debt-value').textContent = data.sleep_debt_display;
   if (data.steps != null) document.getElementById('steps-value').textContent = Number(data.steps).toLocaleString('en-GB');
@@ -212,15 +261,21 @@ function displayWhoopData(data, source) {
     document.getElementById('footer-date').textContent = 'data through ' + pretty;
   }
 
+  if (Array.isArray(data.trajectory)) renderTrajectory(data.trajectory);
+  if (Array.isArray(data.sleep_dose)) {
+    renderBars('sleep-dose-bars', data.sleep_dose, '#73a9ff');
+    document.getElementById('sleep-dose-mode').textContent = 'live';
+  }
+  if (Array.isArray(data.movement)) {
+    renderBars('movement-bars', data.movement, '#71d99a');
+    document.getElementById('movement-mode').textContent = 'live';
+  }
+  if (Array.isArray(data.drivers)) renderDrivers(data.drivers);
+  if (Array.isArray(data.conclusions)) renderConclusions(data.conclusions);
+
   document.getElementById('live-state').textContent = source === 'cache' ? 'Last WHOOP data' : 'Live WHOOP data';
   document.getElementById('live-dot').classList.remove('loading');
-
-  if (Array.isArray(data.trajectory)) document.getElementById('trajectory-mode').textContent = 'live';
-  if (Array.isArray(data.sleep_dose)) document.getElementById('sleep-dose-mode').textContent = 'live';
-  if (Array.isArray(data.drivers)) document.getElementById('drivers-mode').textContent = 'live';
-  if (Array.isArray(data.movement)) document.getElementById('movement-mode').textContent = 'live';
 }
-
 function whoopDashboardData(data) {
   displayWhoopData(data, 'live');
   try { localStorage.setItem('whoop-dashboard-data', JSON.stringify(data)); } catch (e) {}
